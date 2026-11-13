@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/icons/og.png" alt="Steady: your 90-day companion" width="720">
+<img width="1900" height="966" alt="image" src="https://github.com/user-attachments/assets/3c334d53-7e46-4d75-bdb0-712282f17a81" />
 
 # 🌱 Steady
 
@@ -80,7 +80,7 @@ Covers three routines: **Hair Fall**, **Beard Growth** and **Anti-Dandruff**.
 |---|---|
 | 🎨 Front end | Vanilla HTML, CSS, JavaScript (no build step), custom SVG charts |
 | ⚙️ Back end | Node.js and Express, serving the app and proxying AI requests |
-| 🧠 AI | Groq API, `llama-3.3-70b-versatile`, with an offline fallback coach |
+| 🧠 AI | Groq API, `openai/gpt-oss-120b`, with an offline fallback coach |
 | 📲 PWA | Web manifest and service worker |
 | ☁️ Hosting | Render |
 
