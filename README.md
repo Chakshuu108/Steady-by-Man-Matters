@@ -100,11 +100,6 @@ steady/
 
 ---
 
-## 🧰 Built With
-
-Built with **Claude** as the coding agent and **Groq** powering the in-app coach, for the Mosaic Wellness customer-insight challenge.
-
----
 
 <div align="center">
 
