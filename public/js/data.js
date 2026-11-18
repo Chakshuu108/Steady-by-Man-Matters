@@ -469,20 +469,60 @@ export const GUIDES = {
 };
 
 // Shampoo Frequency Algorithm
+// Shampoo frequency finder: interrelated rules.
+// Inputs are 1-5 levels. The same symptom can mean different things depending on the others:
+//   flakes + oily scalp  -> likely true dandruff (yeast)   -> wash MORE
+//   flakes + dry scalp   -> dryness flaking, not dandruff  -> wash LESS (washing more makes it worse)
+//   dry + oily together  -> stripped scalp over-producing oil (rebound) -> do NOT wash more
 export function frequencyAdvice({ dryness, flakes, oil }) {
-  let n = 3;
-  if (flakes >= 4) n = 4;
-  if (oil >= 4) n = Math.max(n, 4);
-  if (dryness >= 4) n = 2;
-  else if (dryness === 3) n = Math.min(n, 3);
+  const d = Number(dryness) || 3, f = Number(flakes) || 3, o = Number(oil) || 3;
 
-  const txt = n >= 4
-    ? 'Active Flare Protocol: Wash 4 times weekly for the first 14 days to clear Malassezia colonization, then step down to 2–3 times weekly once flakes resolve.'
+  // 1) Classify the pattern (order matters: most serious first)
+  let profile = 'balanced';
+  if (d >= 4 && f >= 4) profile = 'severe';              // very dry AND heavy flaking
+  else if (d >= 4 && o >= 3) profile = 'rebound';        // clearly dry yet oily: over-washed scalp
+  else if (f >= 3 && o <= 2 && d >= 3) profile = 'dryFlakes'; // flakes without oil: dry-scalp flaking
+  else if (f >= 4 && ((o >= 3 && d <= 3) || d <= 2)) profile = 'flare'; // heavy flakes on a non-dry scalp: true dandruff flare
+  else if (f <= 1 && o <= 2 && d <= 2) profile = 'clear';     // everything calm
+
+  // 2) Cleansing need (1-5): flakes only count fully when they look like dandruff, not dryness
+  const flakeEffect = profile === 'dryFlakes' || profile === 'severe' ? 1 + (f - 1) * 0.4 : f;
+  const need = 0.6 * flakeEffect + 0.4 * o;
+
+  // 3) Map need to washes/week (need 1 -> 2 washes, need 5 -> 4 washes), then subtract a dryness penalty
+  const raw = 2 + (need - 1) / 2;
+  const penalty = d >= 3 ? (d - 2) * 0.5 : 0;
+  let n = Math.round(raw - penalty);
+
+  if (profile === 'flare' && d <= 2) n = Math.max(n, 4);   // active flare on a non-dry scalp
+
+  // 4) Safety caps driven by dryness (dryness always has the final say)
+  if (d >= 5) n = Math.min(n, 2);
+  else if (d >= 3) n = Math.min(n, 3);      // 4x is only allowed when scalp is not dry
+  if (profile === 'rebound' || profile === 'severe') n = Math.min(n, 2);
+  n = Math.max(2, Math.min(4, n));
+
+  // 5) Explain WHY, so the answer is transparent
+  const why = {
+    severe: 'Your scalp is very dry and heavily flaking at the same time, which usually means irritation rather than simple dandruff, so washing more would make it worse.',
+    rebound: 'A dry scalp that is still oily often means it was stripped and is over-producing oil, so washing more would keep the cycle going.',
+    dryFlakes: 'Your flakes appear with low oil and a dry scalp, which points to dryness flaking rather than dandruff, so fewer washes plus a light moisturiser works better.',
+    flare: 'Heavy flakes with an oily scalp point to an active dandruff flare, which needs more frequent cleansing for a short time.',
+    clear: 'Your scalp looks calm, so you only need a light maintenance rhythm.',
+    balanced: 'Your signals are mixed, so a moderate rhythm is the safest starting point.'
+  }[profile];
+
+  const base = n >= 4
+    ? 'Active Flare Protocol: Wash 4 times weekly for the first 14 days to clear Malassezia colonization, then step down to 2\u20133 times weekly once flakes resolve.'
     : n === 3
     ? 'Balanced Cleansing: Wash 3 times per week. Leave the lather resting on your scalp for a full 3 to 4 minutes before rinsing with lukewarm water.'
-    : 'Gentle Barrier Protection: Scalp dryness is prominent. Step down to 2 washes per week, apply a light hydrating conditioner strictly to the hair ends, and rinse thoroughly.';
+    : 'Gentle Barrier Protection: Step down to 2 washes per week, apply a light hydrating conditioner strictly to the hair ends, and rinse thoroughly.';
 
-  return { n, txt };
+  const doctor = profile === 'severe'
+    ? ' If dryness, redness or peeling continues for more than 2 weeks, please see a doctor.'
+    : '';
+
+  return { n, profile, need: Math.round(need * 10) / 10, txt: base + ' ' + why + doctor };
 }
 
 export const PHASE_COLORS = {
