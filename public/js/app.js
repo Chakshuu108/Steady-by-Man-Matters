@@ -908,7 +908,7 @@ function paneRefill() {
         <div class="field" style="flex:1;min-width:140px">
           <label for="rs">Kit Supply Duration</label>
           <select id="rs">
-            ${[30, 45, 60, 90].map(n => `<option ${+r.supply === n ? 'selected' : ''}>${n} Days Supply</option>`).join('')}
+            ${[30, 45, 60, 90].map(n => `<option value="${n}" ${+r.supply === n ? 'selected' : ''}>${n} Days Supply</option>`).join('')}
           </select>
         </div>
         <div class="field" style="flex:1;min-width:140px">
@@ -1255,10 +1255,15 @@ document.addEventListener('click', async e => {
     ask(el.textContent);
   }
   else if (a === 'saverefill') {
+    const supply = parseInt($('#rs').value, 10);
+    if (!Number.isFinite(supply) || supply <= 0) {
+      toast('Please choose a valid supply duration');
+      return;
+    }
     S.set({
       refill: {
         delivered: $('#rd').value || null,
-        supply: +$('#rs').value,
+        supply,
         buffer: Math.max(2, +$('#rb').value || 12)
       }
     });
