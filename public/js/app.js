@@ -796,7 +796,7 @@ function paneCoach() {
   if (!ui.chat.length) {
     ui.chat.push({
       role: 'assistant',
-      content: `Hello &mdash; I am your Steady Clinical Companion. You are currently in Week ${S.weekNo()} (${S.phaseFor(S.weekNo()).name}). Feel free to ask about temporary shedding, product application protocols, expected timelines, or any ingredient questions.`,
+      content: `Hello — I am your Steady Clinical Companion. You are currently in Week ${S.weekNo()} (${S.phaseFor(S.weekNo()).name}). Feel free to ask about temporary shedding, product application protocols, expected timelines, or any ingredient questions.`,
       src: 'welcome'
     });
   }
