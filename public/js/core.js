@@ -246,19 +246,20 @@ export function loadDemo() {
   checkins[addDays(today(), -2)] = { gummies: true };
   checkins[addDays(today(), -3)] = { gummies: true };
 
-  const mk = (off, drain, itch, thick, note = '') => ({
+  const mk = (off, drain, itch, thick, note = '', photo = null) => ({
     date: addDays(start, off),
     week: weekNo(off + 1),
     vals: { drain, itch, thick },
-    note
+    note,
+    photo
   });
 
   const logs = [
-    mk(0, 3, 3, 2, 'Initial week 1 baseline recorded.'),
+    mk(0, 3, 3, 2, 'Initial week 1 baseline recorded.', 'img/demo-week1.png'),
     mk(14, 4, 3, 2, 'Mild scalp adjustment.'),
     mk(21, 5, 4, 2, 'Week 3 shedding surge in shower drain. Checked Steady guide, continued routine.'),
     mk(28, 4, 2, 2, 'Shedding starting to stabilize. Scalp itch completely calmed.'),
-    mk(35, 3, 2, 3, 'Noticed noticeably fewer strands on pillow. Hair feels slightly more resilient.')
+    mk(35, 3, 2, 3, 'Noticed noticeably fewer strands on pillow. Hair feels slightly more resilient.', 'img/demo-week6.png')
   ];
 
   set({
